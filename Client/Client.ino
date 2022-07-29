@@ -119,10 +119,11 @@ static void humidityNotifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteri
 
 //function that prints the latest sensor readings in the OLED display
 void printReadings(){
-  Serial.print("ความซื้น ");
-  Serial.print(humidityChar);
-  Serial.print("  อุณหภูมิ ");
-  Serial.println(temperatureChar);
+  Serial.println("Recive Data Form the Server");
+  Serial.print("Temperature : ");
+  Serial.print(temperatureChar);
+  Serial.print("Humidity : ");
+  Serial.println(humidityChar);  
 }
 
 void setup() {
