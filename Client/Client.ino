@@ -15,6 +15,8 @@
 //BLE Server name (the other ESP32 name running the server sketch)
 #define bleServerName "BME280_ESP32"
 
+int scanTime = 5; //In seconds
+BLEScan* pBLEScan;
 /* UUID's of the service, characteristic that we want to read*/
 // BLE Service
 static BLEUUID bmeServiceUUID("91bad492-b950-4226-aa2b-4ede9fa42f59");
@@ -135,7 +137,7 @@ void setup() {
   // Retrieve a Scanner and set the callback we want to use to be informed when we
   // have detected a new device.  Specify that we want active scanning and start the
   // scan to run for 30 seconds.
-  BLEScan* pBLEScan = BLEDevice::getScan();
+  pBLEScan = BLEDevice::getScan();
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
   pBLEScan->setActiveScan(true);
   pBLEScan->start(30);
@@ -153,9 +155,15 @@ void loop() {
       humidityCharacteristic->getDescriptor(BLEUUID((uint16_t)0x2902))->writeValue((uint8_t*)notificationOn, 2, true);
       connected = true;
     } else {
+      doConnect = false;
+      connected = false;
       Serial.println("We have failed to connect to the server; Restart your device to scan for nearby BLE server again.");
     }
     doConnect = false;
+  }else{
+    BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
+    pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
+    delay(2000);
   }
   //if new temperature readings are available, print in the OLED
   if (newTemperature && newHumidity){
